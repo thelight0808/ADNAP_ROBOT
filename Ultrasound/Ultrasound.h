@@ -26,9 +26,9 @@
 #define ECHO_PIN_1			GPIO_PIN_4	//PA4
 #define ECHO_PIN_2			GPIO_PIN_5	//PA5
 
-#define TRIGGER_PORT		GPIO_PORTE_BASE
-#define TRIGGER_PIN_1		GPIO_PIN_2	//PE2
-#define TRIGGER_PIN_2		GPIO_PIN_3	//PE3
+#define TRIGGER_PORT		GPIO_PORTA_BASE
+#define TRIGGER_PIN_1		GPIO_PIN_2	//PA2
+#define TRIGGER_PIN_2		GPIO_PIN_3	//PA3
 
 
 #define WAITING_FOR_ECHO    (GPIOPinRead(GPIO_PORTA_BASE, GPIO_PIN_4) == GPIO_PIN_4 || \
@@ -37,7 +37,8 @@
 #define RECEIVE_ECHO        (GPIOPinRead(GPIO_PORTA_BASE, GPIO_PIN_4) == 0 || \
 							 GPIOPinRead(GPIO_PORTA_BASE, GPIO_PIN_5) == 0 )
 #define TOO_FAR				(Pulse > ((SysCtlClockGet() / 1000) * 30))
-#define IN_RANGE			(Pulse > ((SysCtlClockGet() / 1000000) * 20) && Pulse <= ((SysCtlClockGet() / 1000) * 30))
+#define IN_RANGE			(Pulse > ((SysCtlClockGet() / 1000000) * 20) && \
+							Pulse <= ((SysCtlClockGet() / 1000) * 30))
 
 /******************************************************************************
  * 								PROTOTYPE

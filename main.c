@@ -10,61 +10,48 @@
 /******************************************************************************
  * 								IMPORT
  *****************************************************************************/
+#include "include.h"
 
-#include "LCD_5110/LCD_5110.h"
-#include "Ultrasound/Ultrasound.h"
-#include "SysConfigure/SysConfigure.h"
-#include <stdint.h>
-#include <stdbool.h>
-#include "inc/hw_ints.h"
-#include "inc/hw_memmap.h"
-#include "driverlib/timer.h"
-int16_t Distance = 0;
+extern int16_t Distance = 0;
 /******************************************************************************
  * 								MAIN
  *****************************************************************************/
 int main(void)
 {
-	// Configures system : clock, timer, UART
+	// Configures system
 	SysConfig();
-
-	//Configure Ultrasound pin
-	UltrasoundPinConfig();
-
-	LCDInit(45,0,4);
-
-	LCDClear();
-	gotoXY(0,0);
-	//		   012345678912
-	LCDString("   TIVA C   ");
-	gotoXY(0,1);
-	LCDString("LM4F123GH6PM");
-	gotoXY(0,3);
-	LCDString("Distance(mm)");
-
-
-
-	/*
-      //Prints out the distance measured.
-      UARTprintf("distance = %2dcm \n" , pulse);
-		gotoXY(0,4);
-		LCDCharacter((pulse/10000)%10 + 0x30);
-		LCDCharacter((pulse/1000)%10 + 0x30);
-		LCDCharacter((pulse/100)%10 + 0x30);
-		LCDCharacter((pulse/10)%10 + 0x30);
-		LCDCharacter(pulse%10 + 0x30);
-		LCDString(" cm ");
-      }
-      //wait about 10ms until the next reading.
-      SysCtlDelay(400000);
-  */
-
+	//UltrasoundPinConfig();
+	LCDInit(50,0,5);
+	//Servo_Config();
+	//bluetooth_print("abs\n");
+	//bluetooth_print("AfdsgP\n");
+	LCDBackLight_ON();
+	//while(1)
+	//{
+	//	LCDBackLight_ON();
+		//GetData();
+	//}
 }
-void Timer0IntHandler(void)
+void Timer0IntUltrasound(void)
 {
 	// Clear the timer interrupt.
-	    TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 	Distance = get_Distance();
+	if(Distance < 200000)
+	{
+		if(Distance < 100000)
+		{
+			//stop motor
+		}
+		if (Distance && 0x8000 == 0)
+		{
+			//turn left
+		}
+		else if(Distance && 0x8000 == 0x8000)
+		{
+			//turn right
+		}
+	}
 }
 /******************************************************************************
  * 								END OF FILE

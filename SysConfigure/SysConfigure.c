@@ -6,17 +6,9 @@
  *     Version: 1.0.1
  *
  */
+#include "../include.h"
 
 #include "SysConfigure.h"
-
-#include <stdint.h>
-#include <stdbool.h>
-#include "driverlib/sysctl.h"
-#include "driverlib/gpio.h"
-#include "inc/hw_memmap.h"
-#include "utils/uartstdio.c"
-#include "driverlib/timer.h"
-#include "driverlib/pin_map.h"
 /************************************************************************
  * 						FUNCTION
  ***********************************************************************/
@@ -100,20 +92,22 @@ void InitConsole(void)
 //
 //! Input		: 	None
 //! Return		:	None
-//! Decription	: 	Configures interrupt.
+//! Decription	: 	Configures interrupt for Ultrasound
 //
 //***********************************************************************
 void InterruptInit(void)
 {
-	//
-	// The interrupt handler function.
-	//
-	extern void Timer0IntHandler(void);
+	//Configure Timer for Ultrasound
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
+	TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);
+	extern void Timer0IntUltrasound(void);
 
+	uint32_t ui32Period = (SysCtlClockGet() / 4000000);//50 ms????
+	TimerLoadSet(TIMER0_BASE, TIMER_A, ui32Period -1);
 	//
 	// Register the interrupt handler function for Timer0A.
 	//
-	IntRegister(INT_TIMER0A, Timer0IntHandler);
+	IntRegister(INT_TIMER0A, Timer0IntUltrasound);
 
 	//
 	// Enable the interrupt for Timer0A.
@@ -124,6 +118,10 @@ void InterruptInit(void)
 	// Enable Timer0A .
 	//
 	IntMasterEnable();
+
+	TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+
+	TimerEnable(TIMER0_BASE, TIMER_A);
 }
 
 //***********************************************************************
@@ -136,8 +134,7 @@ void InterruptInit(void)
 void SysConfig(void)
 {
  //Set system clock to 80Mhz
-   //SysCtlClockSet(SYSCTL_SYSDIV_2_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
-   SysCtlClockSet(SYSCTL_SYSDIV_32 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+   SysCtlClockSet(SYSCTL_SYSDIV_2_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
    //Configures the UART
    InitConsole();
 

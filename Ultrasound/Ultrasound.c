@@ -9,17 +9,9 @@
 /************************************************************************
  *						 IMPORT
  ***********************************************************************/
-
+#include "../include.h"
 #include "Ultrasound.h"
 
-#include <stdint.h>
-#include <stdbool.h>
-#include "inc/hw_types.h"
-#include "inc/hw_memmap.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/gpio.h"
-#include "driverlib/timer.h"
-#include "inc/hw_timer.h"
 
 /************************************************************************
  * 					GLOBAL VARIABLE
@@ -41,7 +33,7 @@
  /*
   * Show which sensor is being read
   */
- static char UltrasonicSensor = 0;
+ extern char UltrasonicSensor = 0;
 
  /*
   * Tells the main code if the a pulse is being read at the moment
@@ -198,11 +190,12 @@ int CalculateDistance(char UltrasonicSensor, double Pulse)
   {
 	  Distance |= 0x4000;//Set fifteenth bit
 	  Distance &= 0xDFFF;//clear fourteen bit
+	  Distance |= 0x3FFF;//set distance is extremely
   }
   else
   {
 	  Distance |= 0x6000;//Set fifteenth and fourteen bit
-
+	  Distance &= 0xC000;//set distance is zero
   }
   return Distance;
 }

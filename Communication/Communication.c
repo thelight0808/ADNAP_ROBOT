@@ -44,7 +44,6 @@ void GetData(void)
 		LCDPicture(Picture);
 		break;
 	case 'T'://Temperature
-		LCDBackLight_ON();
 		break;
 	case 'B'://Battery
 		sprintf(str, "%.4g", get_Battery());//convert float to string????

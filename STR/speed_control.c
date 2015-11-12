@@ -20,11 +20,8 @@ static void speed_update_setpoint(void);
 static void speed_control_runtimeout(uint32_t ms);
 static void speed_control_stoptimeout(void);
 //* Private variables -------------------------------------------------------*/
-static real_T Theta[4], Theta_[4] = {-1, 1, 1, 1};
-static real_T Theta2[4], Theta2_[4] = {-1, 1, 1, 1};
 static int32_t SetPoint[2] = {0, 0};
 static int32_t RealSpeedSet[2] = {0, 0};
-static float udk = 0;
 static TIMER_ID speed_control_timID = INVALID_TIMER_ID;
 
 void speed_control_init(void)
@@ -33,34 +30,6 @@ void speed_control_init(void)
 	Config_PWM();
 	SetPWM(PWM_MOTOR_LEFT, DEFAULT, 0);
 	SetPWM(PWM_MOTOR_RIGHT, DEFAULT, 0);
-}
-
-/**
- * @brief Init battery sense
- * @note this function must call to calculate speed control
- */
-void ProcessSpeedControl(void)
-{
-	int32_t Velocity[2];
-//	SetPoint = 250;
-	if (qei_getVelocity(0, &Velocity[0]) == true)
-	{
-		udk = STR_Indirect(Theta, RealSpeedSet[0], Velocity[0]);
-		SetPWM(PWM_MOTOR_RIGHT, DEFAULT, udk);
-		Uocluong(udk, Velocity[0], Theta, Theta_);
-#ifdef _DEBUG_SPEED_
-		bluetooth_print("Right: %d\r\n", Velocity[0]);
-#endif
-	}
-	if (qei_getVelocity(1, &Velocity[1]) == true)
-	{
-		udk = STR_Indirect2(Theta2, RealSpeedSet[1], Velocity[1]);
-		SetPWM(PWM_MOTOR_LEFT, DEFAULT, udk);
-		Uocluong2(udk, Velocity[1], Theta2, Theta2_);
-#ifdef _DEBUG_SPEED_
-		bluetooth_print("Left: %d\r\n", Velocity[1]);
-#endif
-	}
 }
 
 static void Config_PWM(void)
@@ -182,42 +151,4 @@ static void speed_control_stoptimeout(void)
 	if (speed_control_timID != INVALID_TIMER_ID)
 		TIMER_UnregisterEvent(speed_control_timID);
 	speed_control_timID = INVALID_TIMER_ID;
-}
-
-void speed_SetMotorModel(MOTOR_SELECT select, real_T Theta[4])
-{
-	int i;
-	if (select == MOTOR_RIGHT)
-	{
-		for (i = 0; i < 4; i++)
-		{
-			Theta_[i] = Theta[i];
-		}
-	}
-	else if (select == MOTOR_LEFT)
-	{
-		for (i = 0; i < 4; i++)
-		{
-			Theta2_[i] = Theta[i];
-		}
-	}
-}
-
-void speed_GetMotorModel(MOTOR_SELECT select, real_T Theta[4])
-{
-	int i;
-	if (select == MOTOR_RIGHT)
-	{
-		for (i = 0; i < 4; i++)
-		{
-			Theta[i] = Theta_[i];
-		}
-	}
-	else if (select == MOTOR_LEFT)
-	{
-		for (i = 0; i < 4; i++)
-		{
-			Theta[i] = Theta2_[i];
-		}
-	}
 }

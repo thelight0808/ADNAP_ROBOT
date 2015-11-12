@@ -17,6 +17,10 @@
 #define PWM_MOTOR_LEFT			TIMER0_BASE, TIMER_A
 #define PWM_MOTOR_RIGHT			TIMER3_BASE, TIMER_A
 
+#define Uht			(double)12.0
+
+#define DEFAULT		20000	//H-Bridge Freq (Hz)
+
 typedef enum
 {
 	MOTOR_LEFT = 0,
@@ -27,7 +31,5 @@ extern void speed_control_init(void);
 extern void ProcessSpeedControl(void);
 extern void speed_set(MOTOR_SELECT Select, int32_t speed);
 extern void speed_Enable_Hbridge(bool Enable);
-extern void speed_SetMotorModel(MOTOR_SELECT select, real_T Theta[4]);
-extern void speed_GetMotorModel(MOTOR_SELECT select, real_T Theta[4]);
 
 #endif /* GOOGLECAR_18_9_14H_STR_SPEED_CONTROL_H_ */

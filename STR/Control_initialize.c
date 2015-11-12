@@ -9,7 +9,6 @@
 
 /* Include files */
 #include "rt_nonfinite.h"
-#include "Uocluong.h"
 #include "Control_initialize.h"
 
 /* Type Definitions */

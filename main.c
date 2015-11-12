@@ -14,23 +14,19 @@
 
 extern int16_t Distance = 0;
 /******************************************************************************
- * 								MAIN
+ * 							MAIN
  *****************************************************************************/
 int main(void)
 {
 	// Configures system
 	SysConfig();
-	//UltrasoundPinConfig();
+	UltrasoundPinConfig();
 	LCDInit(50,0,5);
-	//Servo_Config();
-	//bluetooth_print("abs\n");
-	//bluetooth_print("AfdsgP\n");
-	LCDBackLight_ON();
-	//while(1)
-	//{
-	//	LCDBackLight_ON();
-		//GetData();
-	//}
+	Servo_Config();
+	while(1)
+	{
+		GetData();
+	}
 }
 void Timer0IntUltrasound(void)
 {

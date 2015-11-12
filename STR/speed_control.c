@@ -26,34 +26,72 @@ static TIMER_ID speed_control_timID = INVALID_TIMER_ID;
 
 void speed_control_init(void)
 {
-	Control_initialize();
 	Config_PWM();
 	SetPWM(PWM_MOTOR_LEFT, DEFAULT, 0);
 	SetPWM(PWM_MOTOR_RIGHT, DEFAULT, 0);
 }
 
+/**
+ * @brief Init battery sense
+ * @note this function must call to calculate speed control
+ */
+void ProcessSpeedControl(void)
+{
+//	SetPoint = 250;
+	int32_t Cycle[0];
+	for (i = 0; i < 2; i++)
+	{
+		 Cycle[i] = RealSpeedSet[i]*100/DEFAULT;
+	}
+
+	SetPWM(PWM_MOTOR_RIGHT, DEFAULT, Cycle[0]);
+
+	SetPWM(PWM_MOTOR_LEFT, DEFAULT, Cycle[1]);
+}
+
 static void Config_PWM(void)
 {
+	// Enable the GPIO B
+	//Configures pin PB6 (timer 0) and PB2 (timer 3) for use by the Timer peripheral.
 	ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 	ROM_GPIOPinConfigure(GPIO_PB6_T0CCP0);
 	ROM_GPIOPinConfigure(GPIO_PB2_T3CCP0);
 	ROM_GPIOPinTypeTimer(GPIO_PORTB_BASE, GPIO_PIN_2 | GPIO_PIN_6);
 
+	//
 	// Configure timer
+	//
+
+	// Enable the Timer 3 and Timer 0
 	ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
 	ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
 
+	//
+	//Timer 0 A
+	//
+
+	//Two half-width timers, Half-width PWM output
 	ROM_TimerConfigure(TIMER0_BASE, TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PWM);
+	//Set the count time for the timer (TimerA).
 	ROM_TimerLoadSet(TIMER0_BASE, TIMER_A, DEFAULT);
+	//Sets the timer match value.(PWM mode)
 	ROM_TimerMatchSet(TIMER0_BASE, TIMER_A, DEFAULT); // PWM
+	//Enables the timerA.
 	ROM_TimerEnable(TIMER0_BASE, TIMER_A);
 
+	//
+	//Timer 3 A
+	//
 	ROM_TimerConfigure(TIMER3_BASE, TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PWM);
 	ROM_TimerLoadSet(TIMER3_BASE, TIMER_A, DEFAULT);
 	ROM_TimerMatchSet(TIMER3_BASE, TIMER_A, DEFAULT); // PWM
+	//Controls the output level is made active low
 	ROM_TimerControlLevel(TIMER3_BASE, TIMER_A, true);
 	ROM_TimerEnable(TIMER3_BASE, TIMER_A);
 
+	//
+	//
+	//
 	ROM_SysCtlPeripheralEnable(DRV_ENABLE_LEFT_CHN_PERIPHERAL);
 	ROM_SysCtlPeripheralEnable(DRV_ENABLE_RIGHT_CHN_PERIPHERAL);
 	ROM_GPIOPinTypeGPIOOutput(DRV_ENABLE_LEFT_CHN_PORT, DRV_ENABLE_LEFT_CHN_PIN);
@@ -78,6 +116,7 @@ void speed_Enable_Hbridge(bool Enable)
 		ROM_GPIOPinWrite(DRV_ENABLE_RIGHT_CHN_PORT, DRV_ENABLE_RIGHT_CHN_PIN, 0);
 	}
 }
+
 
 void SetPWM(uint32_t ulBaseAddr, uint32_t ulTimer, uint32_t ulFrequency, int32_t ucDutyCycle)
 {

@@ -19,10 +19,15 @@ extern int16_t Distance = 0;
 int main(void)
 {
 	// Configures system
+	Timer_Init();
+	speed_control_init();
+	HostCommInit();
+	BattSense_init();
 	SysConfig();
 	UltrasoundPinConfig();
 	LCDInit(50,0,5);
 	Servo_Config();
+	bluetooth_init(115200);//baudrate = 11520
 	while(1)
 	{
 		GetData();

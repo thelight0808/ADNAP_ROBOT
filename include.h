@@ -27,11 +27,11 @@
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "inc/hw_timer.h"
-#include "Bluetooth/uartstdio.h"
 
+#include "Battery/Battery.h"
+#include "Bluetooth/uartstdio.h"
 #include "HostComm/HostComm.h"
 #include "SysConfigure/SysConfigure.h"
-#include "STR/Control_initialize.h"
 #include "Bluetooth/ustdlib.h"
 #include "Bluetooth/Bluetooth.h"
 #include "STR/speed_control.h"

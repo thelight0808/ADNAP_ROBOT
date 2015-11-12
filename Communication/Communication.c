@@ -46,12 +46,13 @@ void GetData(void)
 	case 'T'://Temperature
 		break;
 	case 'B'://Battery
-		sprintf(str, "%.4g", get_Battery());//convert float to string????
+		//sprintf(str, "%.4g", get_Battery());//convert float to string????
 		bluetooth_print(str);
 		break;
 	case 'M'://Motor
 		speed_set(MOTOR_RIGHT,data[1]);
 		speed_set(MOTOR_LEFT,data[2]);
+		ProcessSpeedControl();
 		break;
 	case 'H'://hibernate
 		if (data[1])					//sleep mode
@@ -66,6 +67,7 @@ void GetData(void)
 			// write code effect wake up
 		}
 		break;
+
 	}
 	for(i=0;i<3;i++)
 	data[i] = 0;

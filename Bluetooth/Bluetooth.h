@@ -14,6 +14,9 @@
 /*
     Definition of Error code
 */
+
+# define FALSE (0U)
+
 typedef enum
 {
   HC05_NULL_ERROR,

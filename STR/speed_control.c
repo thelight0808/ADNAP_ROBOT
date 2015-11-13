@@ -23,7 +23,7 @@ static void speed_control_stoptimeout(void);
 static int32_t SetPoint[2] = {0, 0};
 static int32_t RealSpeedSet[2] = {0, 0};
 static TIMER_ID speed_control_timID = INVALID_TIMER_ID;
-
+int8_t i;
 void speed_control_init(void)
 {
 	Config_PWM();
@@ -39,14 +39,34 @@ void ProcessSpeedControl(void)
 {
 //	SetPoint = 250;
 	int32_t Cycle[0];
+	//Right motor
+	if (RealSpeedSet[0] > 0)//CCW mode
+	{
+		ROM_GPIOPinWrite(DRV_ENABLE_RIGHT_CHN_PORT, DRV_ENABLE_RIGHT_CHN_PIN_IN_1, 0);
+		ROM_GPIOPinWrite(DRV_ENABLE_RIGHT_CHN_PORT, DRV_ENABLE_RIGHT_CHN_PIN_IN_2, DRV_ENABLE_RIGHT_CHN_PIN_IN_2);
+	}
+	else if (RealSpeedSet[0] < 0)//CW mode
+	{
+		ROM_GPIOPinWrite(DRV_ENABLE_RIGHT_CHN_PORT, DRV_ENABLE_RIGHT_CHN_PIN_IN_1, DRV_ENABLE_RIGHT_CHN_PIN_IN_1);
+		ROM_GPIOPinWrite(DRV_ENABLE_RIGHT_CHN_PORT, DRV_ENABLE_RIGHT_CHN_PIN_IN_2, 0);
+	}
+	//Left motor
+	if (RealSpeedSet[1] > 0)//CCW mode
+	{
+		ROM_GPIOPinWrite(DRV_ENABLE_LEFT_CHN_PORT, DRV_ENABLE_LEFT_CHN_PIN_IN_1, 0);
+		ROM_GPIOPinWrite(DRV_ENABLE_LEFT_CHN_PORT, DRV_ENABLE_LEFT_CHN_PIN_IN_2, DRV_ENABLE_LEFT_CHN_PIN_IN_2);
+	}
+	else if (RealSpeedSet[1] < 0)//CW mode
+	{
+		ROM_GPIOPinWrite(DRV_ENABLE_LEFT_CHN_PORT, DRV_ENABLE_LEFT_CHN_PIN_IN_1, DRV_ENABLE_LEFT_CHN_PIN_IN_1);
+		ROM_GPIOPinWrite(DRV_ENABLE_LEFT_CHN_PORT, DRV_ENABLE_LEFT_CHN_PIN_IN_2, 0);
+	}
+
 	for (i = 0; i < 2; i++)
 	{
 		 Cycle[i] = RealSpeedSet[i]*100/DEFAULT;
+		 SetPWM(PWM_MOTOR_RIGHT, DEFAULT, Cycle[i]);
 	}
-
-	SetPWM(PWM_MOTOR_RIGHT, DEFAULT, Cycle[0]);
-
-	SetPWM(PWM_MOTOR_LEFT, DEFAULT, Cycle[1]);
 }
 
 static void Config_PWM(void)
@@ -75,7 +95,7 @@ static void Config_PWM(void)
 	//Set the count time for the timer (TimerA).
 	ROM_TimerLoadSet(TIMER0_BASE, TIMER_A, DEFAULT);
 	//Sets the timer match value.(PWM mode)
-	ROM_TimerMatchSet(TIMER0_BASE, TIMER_A, DEFAULT); // PWM
+	ROM_TimerMatchSet(TIMER0_BASE, TIMER_A, DEFAULT); // PWM A
 	//Enables the timerA.
 	ROM_TimerEnable(TIMER0_BASE, TIMER_A);
 
@@ -84,13 +104,13 @@ static void Config_PWM(void)
 	//
 	ROM_TimerConfigure(TIMER3_BASE, TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PWM);
 	ROM_TimerLoadSet(TIMER3_BASE, TIMER_A, DEFAULT);
-	ROM_TimerMatchSet(TIMER3_BASE, TIMER_A, DEFAULT); // PWM
+	ROM_TimerMatchSet(TIMER3_BASE, TIMER_A, DEFAULT); // PWM B
 	//Controls the output level is made active low
 	ROM_TimerControlLevel(TIMER3_BASE, TIMER_A, true);
 	ROM_TimerEnable(TIMER3_BASE, TIMER_A);
 
 	//
-	//
+	//Configure pin control function
 	//
 	ROM_SysCtlPeripheralEnable(DRV_ENABLE_LEFT_CHN_PERIPHERAL);
 	ROM_SysCtlPeripheralEnable(DRV_ENABLE_RIGHT_CHN_PERIPHERAL);
@@ -98,6 +118,7 @@ static void Config_PWM(void)
 	ROM_GPIOPinTypeGPIOOutput(DRV_ENABLE_RIGHT_CHN_PORT, DRV_ENABLE_RIGHT_CHN_PIN);
 	ROM_GPIOPinWrite(DRV_ENABLE_LEFT_CHN_PORT, DRV_ENABLE_LEFT_CHN_PIN, 0);
 	ROM_GPIOPinWrite(DRV_ENABLE_RIGHT_CHN_PORT, DRV_ENABLE_RIGHT_CHN_PIN, 0);
+	ROM_GPIOPinWrite(DRV_ENABLE_RIGHT_CHN_PORT, DRV_ENABLE_STBY, DRV_ENABLE_STBY);
 }
 
 /**

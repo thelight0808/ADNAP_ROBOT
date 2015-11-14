@@ -42,6 +42,8 @@
 
  bool CompleteRead;
 
+ static TIMER_ID Ultrasound_TimerID = INVALID_TIMER_ID;
+
  /************************************************************************
   *						 CONFIGURATION
   ***********************************************************************/
@@ -69,14 +71,10 @@
      GPIOIntEnable(ECHO_PORT, ECHO_PIN_1 | ECHO_PIN_2 );
      GPIOIntTypeSet(ECHO_PORT, ECHO_PIN_1 | ECHO_PIN_2 , GPIO_BOTH_EDGES);
      GPIOIntRegister(ECHO_PORT, Echo);
- }
-
- void TimerConfig()
- {
-	 TimerConfigure(TIMER2_BASE, TIMER_CFG_PERIODIC_UP);
      /*
-      * full-width periodic timer
+      * run timeout
       */
+     Ultrasound_Runtimeout(100);
  }
 
  /************************************************************************
@@ -224,6 +222,57 @@ int get_Distance(void)
 	}
 	return Distance;
 }
+
+void Timer0IntUltrasound(void)
+{
+	// Clear the timer interrupt.
+	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+
+	int16_t Distance = 0;
+	Distance = get_Distance();
+	if(Distance < 200000)
+	{
+		if(Distance < 100000)
+		{
+			//stop motor
+			speed_set(MOTOR_RIGHT,0);
+			speed_set(MOTOR_LEFT,0);
+		}
+		if (Distance && 0x8000 == 0)
+		{
+			//turn left
+			speed_set(MOTOR_RIGHT,50);
+			speed_set(MOTOR_LEFT,-50);
+		}
+		else if(Distance && 0x8000 == 0x8000)
+		{
+			//turn right
+			speed_set(MOTOR_RIGHT,-50);
+			speed_set(MOTOR_LEFT,50);
+		}
+	}
+}
+
+
+static void Ultrasound_Stoptimeout(void)
+{
+	if (Ultrasound_TimerID != INVALID_TIMER_ID)
+		TIMER_UnregisterEvent(Ultrasound_TimerID);
+	Ultrasound_TimerID = INVALID_TIMER_ID;
+}
+
+static void Ultrasound_Runtimeout(uint32_t msTime)
+{
+	Ultrasound_Stoptimeout();
+	Ultrasound_TimerID = TIMER_RegisterEvent(Timer0IntUltrasound, msTime);
+}
+
+
+void Stop_Ultrasound(void)
+{
+	Ultrasound_Stoptimeout();
+}
+
 /************************************************************************
  *					 END OF FILE
  ************************************************************************/

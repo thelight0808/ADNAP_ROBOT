@@ -49,6 +49,8 @@
  extern void Trigger();
  extern int CalculateDistance(char UltrasonicSensor, double Pulse);
  extern int get_Distance(void);
+ static void Ultrasound_Runtimeout(uint32_t msTime);
+ extern void Stop_Ultrasound(void);
 
 /******************************************************************************
  * 								END OF FILE

@@ -224,10 +224,13 @@ void bluetooth_print(const char * __restrict format, ...) {
 	bluetooth_send((const uint8_t *) Tx_Buf, strlen((const char *) Tx_Buf));
 }
 
+//action get data, and register Timer event 100ms for function
+//HC05_HandleTimeoutEvt
 void HC05_QueryRxData(void) {
 	hc05_currentRxAction = HC05_RX_GET_DATA;
 	HC05_RunTimeout(100);
 }
+
 
 uint16_t HC05_GetRxData(uint8_t *data, uint16_t len) {
 	volatile uint16_t ui16_size = 0;
@@ -246,6 +249,9 @@ uint16_t HC05_GetRxSize(void) {
 	return ui16_rxSize;
 }
 
+
+//register Interrupt Event for function "callback"
+//return true if register success
 bool HC05_RegisterEvtNotify(void (*callback)()) {
 	int i;
 	for (i = 0; i < MAX_NUM_CALLBACK; i++) {
@@ -257,6 +263,8 @@ bool HC05_RegisterEvtNotify(void (*callback)()) {
 	return false;
 }
 
+//unregister Interrupt Event for function "callback"
+//return true if unregister success
 bool HC05_UnregisterEvtNotify(void (*callback)()) {
 	int i;
 	for (i = 0; i < MAX_NUM_CALLBACK; i++) {
@@ -284,9 +292,11 @@ void HC05_NotifyUpperLayer(HC05_SYSTEM_INFO_TYPES type,
 	}
 }
 
+
 HC05_SYSTEM_INFO_TYPES HC05_GetSystemInfoType(void) {
 	return hc05_SystemInfoType;
 }
+
 
 HC05_SYSTEM_INFO_ID HC05_GetSystemInfoID(void) {
 	return hc05_SystemInfoID;

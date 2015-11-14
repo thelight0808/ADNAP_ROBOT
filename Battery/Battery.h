@@ -14,5 +14,6 @@
 
 extern void BattSense_init(void);
 extern float get_Battery(void);
+extern uint8_t get_pecent_Battery(void);
 
 #endif /* GOOGLECAR_18_9_14H_BATTERY_BATTERY_H_ */

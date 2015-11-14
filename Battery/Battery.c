@@ -89,14 +89,11 @@ void BattSenseISR(void)
 	if (BatteryVoltage > (float)7.6)
 		{
 			//shutdown robot here to protect battery
-
-			//write new code here
 		}
 		else if (BatteryVoltage < (float)7.4)
 		{
 			//Notify user to shutdown robot
-
-			//write new code here
+			bluetooth_print("Low Battery !");
 		}
 }
 
@@ -116,4 +113,9 @@ static void battery_Runtimeout(TIMER_CALLBACK_FUNC TimeoutCallback, uint32_t msT
 float get_Battery(void)
 {
 	return BatteryVoltage;
+}
+
+uint8_t get_pecent_Battery(void)
+{
+	return (uint8_t)(BatteryVoltage*100/7.4);
 }

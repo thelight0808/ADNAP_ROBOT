@@ -6,16 +6,13 @@
  */
 #include <stdlib.h>
 #include "Communication.h"
-#include "../Battery/Battery.h"
 #include "../include.h"
 
 uint8_t data[3];
 uint8_t i;
 unsigned char Picture[504];
-char str[3];
-extern int16_t Distance;
+int16_t Distance;
 extern char UltrasonicSensor;
-char C_Distance[50];
 void GetData(void)
 {
 	HC05_GetRxData(&data[0],3);
@@ -36,18 +33,17 @@ void GetData(void)
 			Distance = get_Distance();
 		}
 		Distance &= 0x3FFF;
-		//itoa(Distance,C_Distance,10);??????????
-		//bluetooth_print(C_Distance);
+		bluetooth_print("Distance: %d",Distance);
 		break;
 	case 'L'://LCD
 		HC05_GetRxData(&Picture[0],504);
 		LCDPicture(Picture);
 		break;
 	case 'T'://Temperature
+		bluetooth_print("%d",(uint8_t)halGetTemperature());
 		break;
 	case 'B'://Battery
-		//sprintf(str, "%.4g", get_Battery());//convert float to string????
-		bluetooth_print(str);
+		bluetooth_print("%d",get_pecent_Battery());
 		break;
 	case 'M'://Motor
 		speed_set(MOTOR_RIGHT,data[1]);
@@ -58,12 +54,15 @@ void GetData(void)
 		if (data[1])					//sleep mode
 		{
 			// write code effect sleep here
+			setDutyCycle(0,0);
+			Stop_Ultrasound();
+			LCDClear();
+			LCDBackLight_OFF();
+			speed_Enable_Hbridge(false);
 			bluetooth_print("AT+SLEEP");
 		}
 		else							//wake up ???????????
 		{
-			for(i=0;i<8;i++)
-				bluetooth_print("ADNAP_ROBOT");
 			// write code effect wake up
 		}
 		break;

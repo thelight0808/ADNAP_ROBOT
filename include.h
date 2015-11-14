@@ -40,4 +40,5 @@
 #include "Servo_RC_9G/Servo_RC_9G.h"
 #include "LCD_5110/LCD_5110.h"
 #include "Communication/Communication.h"
+#include "Temperature/Temperature.h"
 #endif /* INCLUDE_H_ */

@@ -7,7 +7,7 @@
 
 #include "../include.h"
 
-#define MAX_HANDLER_EVT 10//maximum event interrupt
+#define MAX_HANDLER_EVT 10
 typedef struct
 {
   HOSTCOMM_CALLBACK_FUNC callback;
@@ -26,8 +26,6 @@ static HOSTCOMM_EVT hostcom_event_list[MAX_HANDLER_EVT];
 static uint32_t rxFrameStart, rxFrameEnd;
 static bool HostComm_HC05_Timer_IsTimeout = false;
 uint32_t recvGetBuff[];
-
-
 uint16_t HostComm_calcCheckSum(uint8_t *data, uint8_t len)
 {
     uint16_t sum=0;
@@ -42,14 +40,11 @@ uint16_t HostComm_calcCheckSum(uint8_t *data, uint8_t len)
 void HostCommInit()
 {
 	int i;
-	//bluetooth_init(115200);
-
-	//Register event for function "HostComm_HandleBluetoothEvent"
+	bluetooth_init(115200);
 	HC05_RegisterEvtNotify(&HostComm_HandleBluetoothEvent);
-
-	for(i=0; i< MAX_HANDLER_EVT; i++)
+    for(i=0; i< MAX_HANDLER_EVT; i++)
     {
-    	hostcom_event_list[i].code=0xFF;//???
+    	hostcom_event_list[i].code=0xFF;
     }
 }
 
@@ -81,14 +76,14 @@ void HostComm_HandleBluetoothEvent(void)
   {
     case HC05_RX_AVAILABLE:			//there is Rx data
 		HC05_QueryRxData();
-		break;
+    break;
     case HC05_READ_DONE:			//done TCP reading
 		datalen = HC05_GetRxSize();
 		HC05_GetRxData(HostComm_RxBuf, datalen);
 		HostComm_HandleRxData(HostComm_RxBuf, datalen);
-		break;
+    break;
     case HC05_WRITE_DONE:			//done TCP writing
-    	break;
+    break;
     default: break;
   }
 }

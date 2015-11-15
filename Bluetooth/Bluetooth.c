@@ -52,7 +52,7 @@ void bluetooth_init(uint32_t baudrate) {
 	uint32_t ui32_SystemClock;
 
 	///at this function
-	ui32_SystemClock = 80000000;//80Mhz
+	ui32_SystemClock = u32_UsrSystemClockGet();//80Mhz
 
 	// Enable the GPIO port A and the UART 0.
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);

@@ -7,12 +7,19 @@
  *
  */
 #include "../include.h"
-
+#include "driverlib/systick.h"
 #include "SysConfigure.h"
+
 /************************************************************************
  * 						FUNCTION
  ***********************************************************************/
+static void SysTickIntHandle(void);
+static void system_SystickConfig(uint32_t ui32_msInterval);
+static uint32_t ms_Tickcount = 0;
+static uint32_t systemClock = 80000000;
+uint32_t u32_UsrSystemClockGet();
 
+uint32_t u32_UsrSystemClockGet();
 //***********************************************************************
 //
 //! Input		: 	None
@@ -143,4 +150,34 @@ void SysConfig(void)
 
    //Configures interrupt.
    InterruptInit();
+}
+
+
+uint32_t u32_UsrSystemClockGet()
+{
+	return systemClock;
+}
+
+static void SysTickIntHandle(void)
+{
+	ms_Tickcount++;
+}
+
+static void system_SystickConfig(uint32_t ui32_msInterval)
+{
+	ROM_SysTickPeriodSet(ROM_SysCtlClockGet() * ui32_msInterval / 1000);
+	SysTickIntRegister(&SysTickIntHandle);
+	ROM_SysTickIntEnable();
+	ROM_SysTickEnable();
+}
+
+void Config_System(void)
+{
+	ROM_FPUEnable();
+	ROM_FPULazyStackingEnable();
+	// Config clock
+	//Set system clock to 80Mhz
+	//ROM_SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+	ROM_SysCtlClockSet(SYSCTL_SYSDIV_32 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+	system_SystickConfig(1);
 }

@@ -10,9 +10,9 @@
 #ifndef SERVO_RC_9G_SERVO_RC_9G_H_
 #define SERVO_RC_9G_SERVO_RC_9G_H_
 
-#define	SERVO_PORT 	GPIO_PORTA_BASE
-#define SERVO_0_PIN	GPIO_PIN_6
-#define SERVO_1_PIN	GPIO_PIN_7
+#define	SERVO_PORT 	GPIO_PORTE_BASE
+#define SERVO_0_PIN	GPIO_PIN_4
+#define SERVO_1_PIN	GPIO_PIN_5
 
 extern void Servo_Config();
 extern void setDutyCycle(unsigned long ulDutyCycle_0,unsigned long ulDutyCycle_1);

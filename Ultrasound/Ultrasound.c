@@ -67,14 +67,15 @@
 	  * Configure Echo pin
 	  */
 	 SysCtlPeripheralEnable(ECHO_PORT);
+	 GPIOIntRegister(ECHO_PORT, Echo);			///Problem ????@@@@!!!!!
      GPIOPinTypeGPIOInput(ECHO_PORT, ECHO_PIN_1 | ECHO_PIN_2);
-     GPIOIntEnable(ECHO_PORT, ECHO_PIN_1 | ECHO_PIN_2 );
      GPIOIntTypeSet(ECHO_PORT, ECHO_PIN_1 | ECHO_PIN_2 , GPIO_BOTH_EDGES);
-     GPIOIntRegister(ECHO_PORT, Echo);
+     GPIOIntEnable(ECHO_PORT, ECHO_PIN_1 | ECHO_PIN_2 );
+
      /*
       * run timeout
       */
-     Ultrasound_Runtimeout(100);
+     Ultrasound_Runtimeout(2000);
  }
 
  /************************************************************************
